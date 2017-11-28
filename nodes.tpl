@@ -19,7 +19,7 @@ packages:
   - awscli
 
 runcmd:
-  - aws ec2 modify-instance-attribute --no-source-dest-check --region eu-west-1 --instance-id $(curl -sL http://169.254.169.254/latest/meta-data/instance-id)
+  - aws ec2 modify-instance-attribute --no-source-dest-check --region us-east-2 --instance-id $(curl -sL http://169.254.169.254/latest/meta-data/instance-id)
   - apt-key adv --keyserver hkp://keyserver.ubuntu.com --recv-keys 0xF76221572C52609D 0x3746C208A7317B0F
   - echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
   - echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -28,7 +28,8 @@ runcmd:
   - systemctl enable docker
   - systemctl enable kubelet
   - systemctl start docker
-  - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} ${control_plane_ip} && break || sleep 15; done
+  - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} ${control_plane_ip}:6443 && break || sleep 15; done
+  # --discovery-token-ca-cert-hash sha256:95dc339179f5e68b6f061a6e9e44ae630526fa9a06ded67ed9858d9e0b4974ee
 
 output: { all : '| tee -a /var/log/cloud-init-output.log' }
 

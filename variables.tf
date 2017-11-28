@@ -1,6 +1,6 @@
 variable "aws_region" {
   type    = "string"
-  default = "eu-west-1"
+  default = "us-east-2"
 }
 
 variable "aws_profile" {
@@ -72,7 +72,7 @@ variable "control_plane_num" {
 
 variable "nodes_num" {
   type    = "string"
-  default = 1
+  default = 3
 }
 
 variable "k8s_token" {

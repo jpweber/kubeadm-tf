@@ -1,11 +1,11 @@
 resource "aws_iam_instance_profile" "control_plane" {
   name  = "control_plane"
-  roles = ["${aws_iam_role.control_plane.name}"]
+  role = "${aws_iam_role.control_plane.name}"
 }
 
 resource "aws_iam_instance_profile" "nodes" {
   name  = "nodes"
-  roles = ["${aws_iam_role.nodes.name}"]
+  role = "${aws_iam_role.nodes.name}"
 }
 
 resource "aws_iam_role" "control_plane" {
