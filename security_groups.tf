@@ -84,18 +84,41 @@ resource "aws_security_group" "kube" {
 }
 
 resource "aws_security_group" "allow_https" {
-  name        = "allow-https"
-  description = "give access to 443 port"
+  name        = "allow-https-to-kubeapi"
+  description = "give access to 6443 port"
   vpc_id      = "${aws_vpc.platform.id}"
 
   ingress {
-    from_port = 443
-    to_port   = 443
+    from_port = 6443
+    to_port   = 6443
     protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags {
     Name = "allow-https"
+  }
+}
+
+# A security group for the ELB so it is accessible via the web
+resource "aws_security_group" "elb" {
+  name        = "kube-api"
+  description = "give access to kube api server"
+  vpc_id      = "${aws_vpc.platform.id}"
+
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
