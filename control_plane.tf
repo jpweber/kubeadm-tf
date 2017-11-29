@@ -110,7 +110,8 @@ data "template_file" "control_plane" {
   template = "${file("${path.root}/control_plane.tpl")}"
 
   vars {
-    k8s_token = "${var.k8s_token}"
+    k8s_token = "${var.k8s_token}",
+    elb_dnsname = "${var.route53_elb_cname}"
   }
 }
 
