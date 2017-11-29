@@ -78,3 +78,11 @@ variable "nodes_num" {
 variable "k8s_token" {
   type = "string"
 }
+
+variable "route53_zone_id" {
+  type = "string"
+}
+
+variable "route53_elb_cname" {
+  type = "string"
+}

@@ -35,7 +35,7 @@ runcmd:
   - systemctl enable docker
   - systemctl enable kubelet
   - systemctl start docker
-  - kubeadm init --token=${k8s_token} --pod-network-cidr=192.168.0.0/16
+  - kubeadm init --token=${k8s_token} --pod-network-cidr=192.168.0.0/16 --apiserver-cert-extra-sans=${elb_dnsname}
   - mkdir -p $HOME/.kube
   - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   - sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -47,3 +47,4 @@ final_message: "The system is finally up, after $UPTIME seconds"
 
 # kubeadm init --token=${k8s_token} --cloud-provider=aws
 # needs https://github.com/kubernetes/kubernetes/pull/33681
+
