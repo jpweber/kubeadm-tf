@@ -94,6 +94,7 @@ resource "aws_security_group" "allow_https" {
     protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  
 
   tags {
     Name = "allow-https"
@@ -110,6 +111,13 @@ resource "aws_security_group" "elb" {
   ingress {
     from_port   = 443
     to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

@@ -24,7 +24,7 @@ resource "aws_launch_configuration" "nodes" {
 
   associate_public_ip_address = true
 
-  user_data = "${data.template_cloudinit_config.nodes.rendered}"
+  # user_data = "${data.template_cloudinit_config.nodes.rendered}"
 }
 
 resource "aws_autoscaling_group" "nodes" {
@@ -52,26 +52,26 @@ resource "aws_autoscaling_group" "nodes" {
   depends_on = ["aws_instance.control_plane"]
 }
 
-data "template_file" "nodes" {
-  template = "${file("${path.root}/nodes.tpl")}"
+# data "template_file" "nodes" {
+#   template = "${file("${path.root}/nodes.tpl")}"
 
-  vars {
-    k8s_token        = "${var.k8s_token}"
-    control_plane_ip = "${aws_instance.control_plane.private_ip}"
-  }
-}
+#   vars {
+#     k8s_token        = "${var.k8s_token}"
+#     control_plane_ip = "${aws_instance.control_plane.private_ip}"
+#   }
+# }
 
-data "template_cloudinit_config" "nodes" {
-  gzip          = false
-  base64_encode = false
+# data "template_cloudinit_config" "nodes" {
+#   gzip          = false
+#   base64_encode = false
 
-  part {
-    content_type = "text/cloud-config"
-    content      = "${data.template_file.nodes.rendered}"
-  }
+#   part {
+#     content_type = "text/cloud-config"
+#     content      = "${data.template_file.nodes.rendered}"
+#   }
 
   /* part {
     content_type = "text/x-shellscript"
     content      = "${data.template_file.kubeadm_join.rendered}"
   } */
-}
+# }

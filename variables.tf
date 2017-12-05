@@ -60,14 +60,9 @@ variable "num_private_subnets" {
   default = 0
 }
 
-variable "num_nodes" {
-  type    = "string"
-  default = ""
-}
-
 variable "control_plane_num" {
   type    = "string"
-  default = 1
+  default = 2
 }
 
 variable "nodes_num" {
@@ -75,14 +70,16 @@ variable "nodes_num" {
   default = 3
 }
 
-variable "k8s_token" {
-  type = "string"
-}
+# variable "k8s_token" {
+#   type = "string"
+# }
 
 variable "route53_zone_id" {
   type = "string"
+  default = "Z22YMRMWUEH9KT"
 }
 
 variable "route53_elb_cname" {
   type = "string"
+  default = "k8s.supercomputerrobot.com"
 }
