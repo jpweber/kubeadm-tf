@@ -70,9 +70,9 @@ variable "nodes_num" {
   default = 3
 }
 
-# variable "k8s_token" {
-#   type = "string"
-# }
+variable "k8s_token" {
+  type = "string"
+}
 
 variable "route53_zone_id" {
   type = "string"

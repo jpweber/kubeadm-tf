@@ -103,27 +103,27 @@ resource "aws_instance" "control_plane" {
     Name = "control-plane"
   }
   associate_public_ip_address = true
-  # user_data = "${data.template_cloudinit_config.control_plane.rendered}"
+  user_data = "${data.template_cloudinit_config.control_plane.rendered}"
 }
 
-# data "template_file" "control_plane" {
-#   template = "${file("${path.root}/control_plane.tpl")}"
+data "template_file" "control_plane" {
+  template = "${file("${path.root}/control_plane.tpl")}"
 
-#   vars {
-#     k8s_token = "${var.k8s_token}",
-#     elb_dnsname = "${var.route53_elb_cname}"
-#   }
-# }
+  vars {
+    k8s_token = "${var.k8s_token}",
+    elb_dnsname = "${var.route53_elb_cname}"
+  }
+}
 
-# data "template_cloudinit_config" "control_plane" {
-#   gzip          = false
-#   base64_encode = false
+data "template_cloudinit_config" "control_plane" {
+  gzip          = false
+  base64_encode = false
 
-#   part {
-#     content_type = "text/cloud-config"
-#     content      = "${data.template_file.control_plane.rendered}"
-#   }
-# }
+  part {
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.control_plane.rendered}"
+  }
+}
 
 output "control_plane.public_ip" {
   value = "${aws_instance.control_plane.public_ip}"
