@@ -60,6 +60,11 @@ variable "num_private_subnets" {
   default = 0
 }
 
+variable "num_nodes" {
+  type    = "string"
+  default = ""
+}
+
 variable "control_plane_num" {
   type    = "string"
   default = 2
