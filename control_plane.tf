@@ -27,7 +27,7 @@ resource "aws_launch_configuration" "control_plane" {
     device_name           = "/dev/xvdb"
     volume_type           = "gp2"
     volume_size           = 20
-    delete_on_termination = false
+    delete_on_termination = true
   }
 
   associate_public_ip_address = true
@@ -101,6 +101,7 @@ resource "aws_instance" "control_plane" {
 
   tags {
     Name = "control-plane"
+    "kubernetes.io/cluster/jpw" = "jpw" 
   }
   associate_public_ip_address = true
   user_data = "${data.template_cloudinit_config.control_plane.rendered}"
@@ -111,7 +112,7 @@ data "template_file" "control_plane" {
 
   vars {
     k8s_token = "${var.k8s_token}",
-    elb_dnsname = "${var.route53_elb_cname}"
+    elb_dnsname = "${var.route53_elb_cname}",
   }
 }
 

@@ -49,6 +49,12 @@ resource "aws_autoscaling_group" "nodes" {
     propagate_at_launch = true
   }
 
+  tag {
+    key                 = "kubernetes.io/cluster/jpw"
+    value               = ""
+    propagate_at_launch = true
+  }
+
   depends_on = ["aws_instance.control_plane"]
 }
 

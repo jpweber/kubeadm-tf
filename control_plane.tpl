@@ -11,6 +11,20 @@ write_files:
       [Service]
       ExecStart=
       ExecStart=/usr/bin/dockerd -H fd:// --storage-driver=overlay
+  - path: /etc/kubernetes/kubeadm.conf
+    owner: root:root
+    permissions: 0644
+    content: |
+      apiVersion: kubeadm.k8s.io/v1alpha1
+      kind: MasterConfiguration
+      networking:
+        podSubnet: 192.168.0.0/16
+      cloudProvider: aws
+      token: ee99fa.4fd6d8638c0e21bd
+      apiServerExtraArgs:
+        admission-control: NamespaceAutoProvision,Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
+      apiServerCertSANs: [${elb_dnsname}]
+
 
 packages:
   - build-essential
@@ -35,7 +49,10 @@ runcmd:
   - systemctl enable docker
   - systemctl enable kubelet
   - systemctl start docker
-  - kubeadm init --token=${k8s_token} --pod-network-cidr=192.168.0.0/16 --apiserver-cert-extra-sans=${elb_dnsname}
+  - echo 127.0.0.1 $(curl 169.254.169.254/latest/meta-data/hostname) | sudo tee -a /etc/hosts
+  - curl 169.254.169.254/latest/meta-data/hostname | sudo tee /etc/hostname
+  - sudo hostname $(curl 169.254.169.254/latest/meta-data/hostname)
+  - kubeadm init --config /etc/kubernetes/kubeadm.conf
   - mkdir -p $HOME/.kube
   - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   - sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -48,3 +65,7 @@ final_message: "The system is finally up, after $UPTIME seconds"
 # kubeadm init --token=${k8s_token} --cloud-provider=aws
 # needs https://github.com/kubernetes/kubernetes/pull/33681
 
+# original init line  - 
+# kubeadm init --token=${k8s_token} --pod-network-cidr=192.168.0.0/16 --apiserver-cert-extra-sans=${elb_dnsname}
+# config file init line - 
+# kubeadm init --config /etc/kubernetes/kubeadm.conf

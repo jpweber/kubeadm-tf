@@ -27,6 +27,9 @@ runcmd:
   - systemctl daemon-reload
   - systemctl enable docker
   - systemctl enable kubelet
+  - echo 127.0.0.1 $(curl 169.254.169.254/latest/meta-data/hostname) | sudo tee -a /etc/hosts
+  - curl 169.254.169.254/latest/meta-data/hostname | sudo tee /etc/hostname
+  - sudo hostname $(curl 169.254.169.254/latest/meta-data/hostname)
   - systemctl start docker
   - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} ${control_plane_ip}:6443 && break || sleep 15; done
   # --discovery-token-ca-cert-hash sha256:95dc339179f5e68b6f061a6e9e44ae630526fa9a06ded67ed9858d9e0b4974ee
