@@ -3,10 +3,12 @@ resource "aws_launch_configuration" "nodes" {
   image_id      = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.large"
 
-  security_groups = ["${aws_security_group.ssh.id}",
+  security_groups = [
+    "${aws_security_group.ssh.id}",
     "${aws_security_group.icmp.id}",
     "${aws_security_group.outgress.id}",
     "${aws_security_group.kube.id}",
+    "${aws_security_group.LBPorts.id}",
   ]
 
   iam_instance_profile = "${aws_iam_instance_profile.nodes.name}"

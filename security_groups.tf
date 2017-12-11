@@ -16,6 +16,24 @@ resource "aws_security_group" "ssh" {
   }
 }
 
+resource "aws_security_group" "LBPorts" {
+  name        = "LBPorts"
+  description = "Allow load balancers to hit high ports"
+  vpc_id      = "${aws_vpc.platform.id}"
+
+  // allow traffic for TCP 22
+  ingress {
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["10.1.0.0/16"]
+  }
+
+  tags {
+    Name = "LBPorts"
+  }
+}
+
 resource "aws_security_group" "icmp" {
   name        = "icmp"
   description = "Allow ping bettween instances"
