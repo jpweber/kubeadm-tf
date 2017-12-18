@@ -12,6 +12,24 @@ write_files:
       ExecStart=
       ExecStart=/usr/bin/dockerd -H fd:// --storage-driver=overlay
 
+  - path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    owner: root:root
+    permissions: 0644
+    content: |
+      [Service]
+      Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+      Environment="KUBELET_SYSTEM_PODS_ARGS=--pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true"
+      Environment="KUBELET_NETWORK_ARGS=--network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin"
+      Environment="KUBELET_DNS_ARGS=--cluster-dns=10.96.0.10 --cluster-domain=cluster.local"
+      Environment="KUBELET_AUTHZ_ARGS=--authorization-mode=Webhook --client-ca-file=/etc/kubernetes/pki/ca.crt"
+      Environment="KUBELET_CADVISOR_ARGS=--cadvisor-port=0"
+      Environment="KUBELET_CERTIFICATE_ARGS=--rotate-certificates=true --cert-dir=/var/lib/kubelet/pki"
+      Environment="KUBELET_EXTRA_ARGS=--cloud-provider=aws"
+      ExecStart=
+      ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_SYSTEM_PODS_ARGS $KUBELET_NETWORK_ARGS $KUBELET_DNS_ARGS $KUBELET_AUTHZ_ARGS $KUBELET_CADVISOR_ARGS $KUBELET_CERTIFICATE_ARGS $KUBELET_EXTRA_ARGS
+
+
+
 packages:
   - apt-transport-https
   - ca-certificates
@@ -31,9 +49,11 @@ runcmd:
   - curl 169.254.169.254/latest/meta-data/hostname | sudo tee /etc/hostname
   - sudo hostname $(curl 169.254.169.254/latest/meta-data/hostname)
   - systemctl start docker
-  - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} ${control_plane_ip}:6443 && break || sleep 15; done
+  - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} --discovery-token-unsafe-skip-ca-verification ${control_plane_ip}:6443 && break || sleep 15; done
   # --discovery-token-ca-cert-hash sha256:95dc339179f5e68b6f061a6e9e44ae630526fa9a06ded67ed9858d9e0b4974ee
 
 output: { all : '| tee -a /var/log/cloud-init-output.log' }
 
 final_message: "The system is finally up, after $UPTIME seconds"
+
+# - sleep 120 && for i in $(seq 10); do echo "kubeadm join $i" && kubeadm join --token=${k8s_token} ${control_plane_ip}:6443 && break || sleep 15; done
