@@ -128,6 +128,20 @@ data "aws_iam_policy_document" "nodes_ec2" {
       "*",
     ]
   }
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:SetDesiredCapacity",
+      "autoscaling:TerminateInstanceInAutoScalingGroup"
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
 }
 
 resource "aws_iam_policy_attachment" "control_plane_ec2_attachment" {
