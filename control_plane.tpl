@@ -19,8 +19,10 @@ write_files:
       kind: MasterConfiguration
       networking:
         podSubnet: 192.168.0.0/16
+      kubernetesVersion: "stable-1.8"
       cloudProvider: aws
       token: ee99fa.4fd6d8638c0e21bd
+      tokenTTL: "0"
       apiServerExtraArgs:
         admission-control: NamespaceAutoProvision,Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
       apiServerCertSANs: [${elb_dnsname}]
