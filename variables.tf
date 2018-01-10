@@ -19,8 +19,8 @@ variable "public_subnet_blocks" {
 
   default = {
     "0" = "10.1.1.0/24"
-    "1" = "10.1.2.0/24"
-    "2" = "10.1.3.0/24"
+    # "1" = "10.1.2.0/24"
+    # "2" = "10.1.3.0/24"
   }
 }
 
@@ -30,8 +30,8 @@ variable "private_subnet_blocks" {
 
   default = {
     "0" = "10.1.4.0/24"
-    "1" = "10.1.5.0/24"
-    "2" = "10.1.6.0/24"
+    # "1" = "10.1.5.0/24"
+    # "2" = "10.1.6.0/24"
   }
 }
 
@@ -52,7 +52,7 @@ variable "route53_internal_domain" {
 }
 
 variable "num_public_subnets" {
-  default = 3
+  default = 1
 }
 
 variable "num_private_subnets" {
@@ -65,6 +65,11 @@ variable "num_nodes" {
   default = ""
 }
 
+variable "max_nodes" {
+  type    = "string"
+  default = "19"
+}
+
 variable "control_plane_num" {
   type    = "string"
   default = 2
@@ -72,7 +77,7 @@ variable "control_plane_num" {
 
 variable "nodes_num" {
   type    = "string"
-  default = 3
+  default = 2
 }
 
 variable "k8s_token" {
