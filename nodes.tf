@@ -35,7 +35,7 @@ resource "aws_autoscaling_group" "nodes" {
 
   desired_capacity     = "${var.nodes_num}"
   min_size             = "${var.nodes_num}"
-  max_size             = "${var.nodes_num}"
+  max_size             = "${var.max_nodes}"
   termination_policies = ["OldestInstance"]
   health_check_type    = "EC2"
 
