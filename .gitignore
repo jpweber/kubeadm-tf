@@ -2,3 +2,4 @@ terraform.tfstate
 /.terraform
 /terraform.tfstate.backup
 /example-startup
+/up-down.sh
