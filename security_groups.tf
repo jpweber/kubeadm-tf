@@ -52,7 +52,7 @@ resource "aws_security_group" "icmp" {
     to_port         = -1
     protocol        = "icmp"
     security_groups = []
-    self            = true
+    cidr_blocks = ["${var.vpc_cidr_block}"]
   }
 
   tags {
@@ -84,20 +84,22 @@ resource "aws_security_group" "kube" {
 
   ingress {
     from_port = 0
-    to_port   = 65535
-    protocol  = "tcp"
-    self      = true
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = ["${var.vpc_cidr_block}"]
   }
+
 
   ingress {
     from_port = 0
-    to_port   = 65535
-    protocol  = "udp"
-    self      = true
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = ["${lookup(var.private_subnet_blocks, count.index)}"]
   }
 
   tags {
-    Name = "kube"
+    Name = "kube",
+    "kubernetes.io/cluster/jpw" = "jpw"
   }
 }
 
