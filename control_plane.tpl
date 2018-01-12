@@ -34,6 +34,11 @@ write_files:
         audit-log-maxage: "10"
         audit-log-maxsize: "100"
         audit-policy-file: "/etc/kubernetes/audit/audit-policy.yaml"
+        oidc-issuer-url: https://jpw.auth0.com
+        oidc-client-id: 3YM4ue8MoXgBkvCIHhnYC3IE0xmV3iWz
+        oidc-username-claim: sub
+        oidc-groups-claim: "https://jpw.auth0.com/groups"
+
       apiServerExtraVolumes: 
         - name: "audit-policy"
           hostPath: "/etc/kubernetes/audit"
@@ -195,7 +200,7 @@ runcmd:
   - mkdir -p $HOME/.kube
   - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   - sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  - kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
+  - kubectl apply -f https://docs.projectcalico.org/master/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
 
 output: { all : '| tee -a /var/log/cloud-init-output.log' }
 
