@@ -26,12 +26,10 @@ variable "public_subnet_blocks" {
 
 variable "private_subnet_blocks" {
   type        = "map"
-  description = "CIDR blocks for each subnet"
+  description = "Calico CIDR blocks for each subnet"
 
   default = {
-    "0" = "10.1.4.0/24"
-    # "1" = "10.1.5.0/24"
-    # "2" = "10.1.6.0/24"
+    "0" = "192.168.0.0/16"
   }
 }
 
