@@ -6,6 +6,7 @@ resource "aws_vpc" "platform" {
   tags {
     Name  = "platform-${var.stage}"
     Stage = "${var.stage}"
+    "kubernetes.io/cluster/jpw" = "jpw"
   }
 }
 
@@ -53,16 +54,17 @@ resource "aws_subnet" "public" {
   depends_on              = ["aws_main_route_table_association.main"]
 }
 
-resource "aws_subnet" "private" {
-  vpc_id            = "${aws_vpc.platform.id}"
-  availability_zone = "${element(data.aws_availability_zones.az.names, count.index)}"
-  cidr_block        = "${lookup(var.private_subnet_blocks, count.index)}"
-  count             = "${var.num_private_subnets}"
+# resource "aws_subnet" "private" {
+#   vpc_id            = "${aws_vpc.platform.id}"
+#   availability_zone = "${element(data.aws_availability_zones.az.names, count.index)}"
+#   cidr_block        = "${lookup(var.private_subnet_blocks, count.index)}"
+#   count             = "${var.num_private_subnets}"
 
-  tags {
-    Name = "private-${element(data.aws_availability_zones.az.names, count.index)}"
-  }
-}
+#   tags {
+#     Name = "private-${element(data.aws_availability_zones.az.names, count.index)}",
+#     "kubernetes.io/cluster/jpw" = "jpw"
+#   }
+# }
 
 resource "aws_route_table" "public" {
   vpc_id = "${aws_vpc.platform.id}"
@@ -75,36 +77,38 @@ resource "aws_route_table" "public" {
   tags {
     Name  = "platform-${var.stage}"
     Stage = "${var.stage}"
+    "kubernetes.io/cluster/jpw" = "jpw"
   }
 }
 
-resource "aws_route_table" "private" {
-  vpc_id = "${aws_vpc.platform.id}"
+# resource "aws_route_table" "private" {
+#   vpc_id = "${aws_vpc.platform.id}"
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = "${element(aws_nat_gateway.platform.*.id, count.index)}"
-  }
+#   route {
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = "${element(aws_nat_gateway.platform.*.id, count.index)}"
+#   }
 
-  tags {
-    Name  = "${var.stage}-private-${element(data.aws_availability_zones.az.names, count.index)}"
-    Stage = "${var.stage}"
-  }
+#   tags {
+#     Name  = "${var.stage}-private-${element(data.aws_availability_zones.az.names, count.index)}"
+#     Stage = "${var.stage}"
+#     "kubernetes.io/cluster/jpw" = "jpw"
+#   }
 
-  count = "${var.num_private_subnets}"
-}
+#   count = "${var.num_private_subnets}"
+# }
 
 resource "aws_main_route_table_association" "main" {
   vpc_id         = "${aws_vpc.platform.id}"
   route_table_id = "${aws_route_table.public.id}"
 }
 
-resource "aws_route_table_association" "main" {
-  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
+# resource "aws_route_table_association" "main" {
+#   subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
+#   route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
 
-  count = "${var.num_private_subnets}"
-}
+#   count = "${var.num_private_subnets}"
+# }
 
 resource "aws_eip" "nat" {
   vpc = true
