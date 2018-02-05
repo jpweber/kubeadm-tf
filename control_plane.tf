@@ -27,7 +27,7 @@ resource "aws_launch_configuration" "control_plane" {
     device_name           = "/dev/xvdb"
     volume_type           = "gp2"
     volume_size           = 20
-    delete_on_termination = false
+    delete_on_termination = true
   }
 
   associate_public_ip_address = true
@@ -101,9 +101,31 @@ resource "aws_instance" "control_plane" {
 
   tags {
     Name = "control-plane"
+    "kubernetes.io/cluster/jpw" = "jpw" 
   }
   associate_public_ip_address = true
   user_data = "${data.template_cloudinit_config.control_plane.rendered}"
+
+  connection {
+        user = "ubuntu"
+        private_key = "${file("/Users/jamesweber/.ssh/id_rsa")}"
+    }
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p $HOME/.kube",
+      "until ls /etc/kubernetes/admin.conf; do sleep 3; done",
+      "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
+      "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
+      "cat $HOME/.kube/config"
+    ]
+  }
+  
+  provisioner "local-exec" {
+    command = "scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null ubuntu@${aws_instance.control_plane.public_ip}:/home/ubuntu/.kube/config/ ~/kube-config.tf"
+    command = "sed -i '' 's/10.1.*:6443/k8s.supercomputerrobot.com/g' ./kube-config.tf"
+  
+  }
+
 }
 
 data "template_file" "control_plane" {
@@ -111,7 +133,7 @@ data "template_file" "control_plane" {
 
   vars {
     k8s_token = "${var.k8s_token}",
-    elb_dnsname = "${var.route53_elb_cname}"
+    elb_dnsname = "${var.route53_elb_cname}",
   }
 }
 

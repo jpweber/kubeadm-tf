@@ -17,6 +17,13 @@ resource "aws_elb" "kube_api" {
     lb_protocol       = "tcp"
   }
 
+  listener {
+    instance_port     = 6443
+    instance_protocol = "tcp"
+    lb_port           = 6443
+    lb_protocol       = "tcp"
+  }
+
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2

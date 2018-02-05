@@ -3,10 +3,12 @@ resource "aws_launch_configuration" "nodes" {
   image_id      = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.large"
 
-  security_groups = ["${aws_security_group.ssh.id}",
+  security_groups = [
+    "${aws_security_group.ssh.id}",
     "${aws_security_group.icmp.id}",
     "${aws_security_group.outgress.id}",
     "${aws_security_group.kube.id}",
+    "${aws_security_group.LBPorts.id}",
   ]
 
   iam_instance_profile = "${aws_iam_instance_profile.nodes.name}"
@@ -33,7 +35,7 @@ resource "aws_autoscaling_group" "nodes" {
 
   desired_capacity     = "${var.nodes_num}"
   min_size             = "${var.nodes_num}"
-  max_size             = "${var.nodes_num}"
+  max_size             = "${var.max_nodes}"
   termination_policies = ["OldestInstance"]
   health_check_type    = "EC2"
 
@@ -46,6 +48,12 @@ resource "aws_autoscaling_group" "nodes" {
   tag {
     key                 = "Name"
     value               = "nodes"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "kubernetes.io/cluster/jpw"
+    value               = ""
     propagate_at_launch = true
   }
 
@@ -74,4 +82,4 @@ data "template_cloudinit_config" "nodes" {
     content_type = "text/x-shellscript"
     content      = "${data.template_file.kubeadm_join.rendered}"
   } */
-}
+ }
